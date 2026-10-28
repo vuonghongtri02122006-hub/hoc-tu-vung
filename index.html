@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VocabMaster - Ứng Dụng Học Từ Vựng Tiếng Anh</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Thanh Navigation chuyển trang -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fa-solid fa-graduation-cap"></i> <span>Vocab<b>Master</b></span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="javascript:void(0)" class="nav-btn active" onclick="switchPage('homePage', this)"><i class="fa-solid fa-house"></i> Trang Chủ</a></li>
+                <li><a href="javascript:void(0)" class="nav-btn" onclick="switchPage('vocabPage', this)"><i class="fa-solid fa-book-open"></i> Từ Vựng</a></li>
+                <li><a href="javascript:void(0)" class="nav-btn" onclick="switchPage('flashcardPage', this)"><i class="fa-solid fa-clone"></i> Flashcard 3D</a></li>
+                <li><a href="javascript:void(0)" class="nav-btn" onclick="switchPage('addWordPage', this)"><i class="fa-solid fa-plus-circle"></i> Thêm Từ Mới</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container">
+
+        <!-- TRANG 1: TRANG CHỦ & TỔNG QUAN -->
+        <div id="homePage" class="page-content active-page">
+            <header class="hero-section">
+                <h1>Nâng Tầm Từ Vựng Tiếng Anh Mỗi Ngày</h1>
+                <p>Phương pháp học từ vựng thông minh qua thẻ ghi nhớ Flashcard 3D và hệ thống phân loại chuẩn quốc tế</p>
+                <div class="hero-buttons">
+                    <button class="btn-primary" onclick="navigateToPage('vocabPage')">Khám Phá Từ Vựng <i class="fa-solid fa-arrow-right"></i></button>
+                    <button class="btn-secondary" onclick="navigateToPage('flashcardPage')">Học Qua Flashcard 3D</button>
+                </div>
+            </header>
+
+            <section class="features-grid">
+                <div class="feature-card">
+                    <i class="fa-solid fa-layer-group feature-icon"></i>
+                    <h3>Phân Cấp Độ Rõ Ràng</h3>
+                    <p>Chia từ vựng theo trình độ A1-A2, B1-B2 và C1-C2 giúp bạn nâng trình từng bước.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fa-solid fa-volume-high feature-icon"></i>
+                    <h3>Phát Âm Chuẩn Mỹ</h3>
+                    <p>Nghe giọng đọc chuẩn bản ngữ cho từng từ vựng chỉ với 1 cú click.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fa-solid fa-floppy-disk feature-icon"></i>
+                    <h3>Lưu Trữ Tự Động</h3>
+                    <p>Tự do thêm từ mới của riêng bạn, dữ liệu được lưu vĩnh viễn trên trình duyệt.</p>
+                </div>
+            </section>
+        </div>
+
+        <!-- TRANG 2: DANH SÁCH TỪ VỰNG & BỘ LỌC -->
+        <div id="vocabPage" class="page-content">
+            <h2 class="main-title"><i class="fa-solid fa-book-bookmark"></i> Kho Từ Vựng Tiếng Anh</h2>
+
+            <!-- Thanh thống kê -->
+            <div class="stats-bar">
+                <span><i class="fa-solid fa-list"></i> Tổng từ: <b id="totalCount">0</b></span>
+                <span>🟢 A1-A2: <b id="a1Count">0</b></span>
+                <span>🟡 B1-B2: <b id="b1Count">0</b></span>
+                <span>🔴 C1-C2: <b id="c1Count">0</b></span>
+            </div>
+
+            <!-- Ô tìm kiếm -->
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="text" id="searchInput" onkeyup="filterVocab()" placeholder="Tìm kiếm từ vựng, phiên âm hoặc nghĩa...">
+            </div>
+
+            <!-- Lọc Cấp độ -->
+            <div class="filter-group">
+                <label class="filter-label"><i class="fa-solid fa-layer-group"></i> Cấp độ:</label>
+                <div class="filter-buttons">
+                    <button class="filter-btn level-btn active" onclick="selectLevel('all')">Tất cả cấp độ</button>
+                    <button class="filter-btn level-btn" onclick="selectLevel('A1-A2')">🟢 A1-A2 (Cơ bản)</button>
+                    <button class="filter-btn level-btn" onclick="selectLevel('B1-B2')">🟡 B1-B2 (Trung cấp)</button>
+                    <button class="filter-btn level-btn" onclick="selectLevel('C1-C2')">🔴 C1-C2 (Cao cấp)</button>
+                </div>
+            </div>
+
+            <!-- Lọc Chủ đề -->
+            <div class="filter-group">
+                <label class="filter-label"><i class="fa-solid fa-folder-open"></i> Chủ đề:</label>
+                <div class="filter-buttons">
+                    <button class="filter-btn topic-btn active" onclick="selectTopic('all')">Tất cả chủ đề</button>
+                    <button class="filter-btn topic-btn" onclick="selectTopic('technology')">💻 Công nghệ</button>
+                    <button class="filter-btn topic-btn" onclick="selectTopic('daily')">💬 Giao tiếp</button>
+                    <button class="filter-btn topic-btn" onclick="selectTopic('business')">💼 Công sở</button>
+                    <button class="filter-btn topic-btn" onclick="selectTopic('education')">📚 Học tập</button>
+                </div>
+            </div>
+
+            <div class="vocab-grid" id="vocabGrid"></div>
+        </div>
+
+        <!-- TRANG 3: FLASHCARD 3D TƯƠNG TÁC -->
+        <div id="flashcardPage" class="page-content">
+            <h2 class="main-title"><i class="fa-solid fa-clone"></i> Lật Thẻ Học Từ Vựng (Flashcard 3D)</h2>
+            <p class="subtitle">Nhấn vào thẻ để xem nghĩa & nghe phát âm chuẩn</p>
+
+            <div class="flashcard-wrapper">
+                <div class="card-container" id="flashcard" onclick="flipCard()">
+                    <div class="card-front">
+                        <span class="fc-level" id="fcLevel">A1-A2</span>
+                        <h3 id="fcWord">Vocabulary</h3>
+                        <p class="hint">Bấm vào đây để lật thẻ 🔄</p>
+                    </div>
+                    <div class="card-back">
+                        <h3 id="fcMeaning">Từ vựng</h3>
+                        <p class="fc-phonetic" id="fcPhonetic">/vəˈkæb.jə.lər.i/</p>
+                        <p class="fc-example" id="fcExample">Reading improves your vocabulary.</p>
+                    </div>
+                </div>
+
+                <div class="fc-controls">
+                    <button onclick="prevCard()"><i class="fa-solid fa-arrow-left"></i> Từ trước</button>
+                    <button onclick="speakCurrentFlashcard()" class="btn-speak"><i class="fa-solid fa-volume-high"></i> Nghe Đọc</button>
+                    <button onclick="nextCard()">Từ tiếp <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TRANG 4: FORM THÊM TỪ MỚI -->
+        <div id="addWordPage" class="page-content">
+            <div class="add-word-form">
+                <h2 class="section-title"><i class="fa-solid fa-plus-circle"></i> Thêm Từ Mới Vào Kho Từ Vựng</h2>
+                <form id="vocabForm" onsubmit="addNewWord(event)">
+                    <div class="form-group">
+                        <input type="text" id="newWord" placeholder="Từ Tiếng Anh (VD: Opportunity)" required>
+                        <input type="text" id="newPhonetic" placeholder="Phiên âm (VD: /ˌɒp.əˈtʃuː.nə.ti/)">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="newMeaning" placeholder="Nghĩa Tiếng Việt" required>
+                        <select id="newLevel">
+                            <option value="A1-A2">🟢 Cấp độ A1-A2 (Cơ bản)</option>
+                            <option value="B1-B2">🟡 Cấp độ B1-B2 (Trung cấp)</option>
+                            <option value="C1-C2">🔴 Cấp độ C1-C2 (Cao cấp)</option>
+                        </select>
+                        <select id="newTopic">
+                            <option value="technology">💻 Công nghệ</option>
+                            <option value="daily">💬 Giao tiếp</option>
+                            <option value="business">💼 Công sở</option>
+                            <option value="education">📚 Học tập</option>
+                        </select>
+                    </div>
+                    <input type="text" id="newExample" placeholder="Ví dụ đặt câu bằng tiếng Anh">
+                    <button type="submit" class="submit-btn"><i class="fa-solid fa-floppy-disk"></i> Lưu Từ Mới Về Trình Duyệt</button>
+                </form>
+            </div>
+        </div>
+
+    </main>
+
+    <footer>
+        <p>© 2026 VocabMaster App - Build with HTML, CSS & JavaScript.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
