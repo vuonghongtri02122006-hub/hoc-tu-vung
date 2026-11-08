@@ -1,189 +1,281 @@
-// Dữ liệu từ vựng ban đầu
-const initialVocab = [
-    { id: 1, word: 'Vocabulary', phonetic: '/vəˈkæb.jə.lər.i/', meaning: 'Từ vựng', level: 'A1-A2', topic: 'daily', example: 'Reading improves your vocabulary.' },
-    { id: 2, word: 'Developer', phonetic: '/dɪˈvel.ə.pər/', meaning: 'Lập trình viên', level: 'B1-B2', topic: 'technology', example: 'She is a senior web developer.' },
-    { id: 3, word: 'Algorithm', phonetic: '/ˈæl.ɡə.rɪ.ðəm/', meaning: 'Thuật toán', level: 'C1-C2', topic: 'technology', example: 'Complex algorithms process big data.' },
-    { id: 4, word: 'Negotiation', phonetic: '/nəˌɡəʊ.ʃiˈeɪ.ʃən/', meaning: 'Cuộc đàm phán', level: 'B1-B2', topic: 'business', example: 'The contract is under negotiation.' },
-    { id: 5, word: 'Perseverance', phonetic: '/ˌpɜː.sɪˈvɪə.rəns/', meaning: 'Sự kiên trì', level: 'C1-C2', topic: 'daily', example: 'Success requires perseverance.' },
-    { id: 6, word: 'Knowledge', phonetic: '/ˈnɒl.ɪdʒ/', meaning: 'Kiến thức', level: 'A1-A2', topic: 'education', example: 'Knowledge is key to freedom.' }
+// 1. DANH SÁCH TỪ VỰNG MẪU BAN ĐẦU
+const initialVocabulary = [
+    { id: 1, word: "Vocabulary", ipa: "/vəˈkæb.jə.lər.i/", meaning: "Từ vựng", example: "Reading improves your vocabulary.", category: "Giao tiếp", level: "A1-A2" },
+    { id: 2, word: "Developer", ipa: "/dɪˈvel.ə.pər/", meaning: "Lập trình viên", example: "She is a senior web developer.", category: "Công nghệ", level: "B1-B2" },
+    { id: 3, word: "Algorithm", ipa: "/ˈæl.ɡə.rɪ.ðəm/", meaning: "Thuật toán", example: "Complex algorithms process big data.", category: "Công nghệ", level: "C1-C2" },
+    { id: 4, word: "Negotiation", ipa: "/nəˌɡəʊ.ʃiˈeɪ.ʃən/", meaning: "Đàm phán", example: "The negotiation was successful.", category: "Công sở", level: "B1-B2" },
+    { id: 5, word: "Perseverance", ipa: "/ˌpɜː.sɪˈvɪə.rəns/", meaning: "Sự kiên trì", example: "Success requires hard work and perseverance.", category: "Giao tiếp", level: "C1-C2" },
+    { id: 6, word: "Knowledge", ipa: "/ˈnɒl.ɪdʒ/", meaning: "Kiến thức", example: "Books are a great source of knowledge.", category: "Học tập", level: "A1-A2" },
+    { id: 7, word: "Database", ipa: "/ˈdeɪ.tə.beɪs/", meaning: "Cơ sở dữ liệu", example: "Data is stored safely in the database.", category: "Công nghệ", level: "B1-B2" },
+    { id: 8, word: "Efficiency", ipa: "/ɪˈfɪʃ.ən.si/", meaning: "Hiệu suất", example: "Automation improves work efficiency.", category: "Công sở", level: "C1-C2" },
+    { id: 9, word: "Schedule", ipa: "/ˈʃed.juːl/", meaning: "Lịch trình", example: "Check your daily schedule carefully.", category: "Học tập", level: "A1-A2" },
+    { id: 10, word: "Innovation", ipa: "/ˌɪn.əˈveɪ.ʃən/", meaning: "Sự đổi mới", example: "Innovation drives growth in business.", category: "Công nghệ", level: "C1-C2" }
 ];
 
-let vocabList = JSON.parse(localStorage.getItem('myVocabData')) || initialVocab;
-let currentLevel = 'all';
-let currentTopic = 'all';
-let currentFlashcardIndex = 0;
+let vocabularyList = [];
 
-document.addEventListener('DOMContentLoaded', () => {
-    renderVocabGrid();
-    updateStats();
-    updateFlashcardUI();
-});
+// 2. TẢI DỮ LIỆU TỪ LOCALSTORAGE
+function loadData() {
+    const storedData = localStorage.getItem('vocab_master_data');
+    if (storedData) {
+        vocabularyList = JSON.parse(storedData);
+    } else {
+        vocabularyList = [...initialVocabulary];
+        saveData();
+    }
+}
 
-// Chuyển đổi trang thông qua Navbar
+function saveData() {
+    localStorage.setItem('vocab_master_data', JSON.stringify(vocabularyList));
+}
+
+// 3. LOGIC CHUYỂN TRANG MƯỢT MÀ
 function switchPage(pageId, element) {
-    document.querySelectorAll('.page-content').forEach(page => page.classList.remove('active-page'));
-    document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+    const pages = document.querySelectorAll('main > div');
+    pages.forEach(page => page.style.display = 'none');
 
-    document.getElementById(pageId).classList.add('active-page');
-    element.classList.add('active');
-}
+    const activePage = document.getElementById(pageId);
+    if (activePage) {
+        activePage.style.display = 'block';
+    }
 
-// Điều hướng từ nút bấm ở Hero Section
-function navigateToPage(pageId) {
-    const navBtnMap = {
-        'vocabPage': 1,
-        'flashcardPage': 2
-    };
     const navBtns = document.querySelectorAll('.nav-btn');
-    switchPage(pageId, navBtns[navBtnMap[pageId]]);
+    navBtns.forEach(btn => btn.classList.remove('active'));
+
+    if (element) {
+        element.classList.add('active');
+    } else {
+        const targetBtn = Array.from(navBtns).find(btn => btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(pageId));
+        if (targetBtn) targetBtn.classList.add('active');
+    }
+
+    if (pageId === 'vocabPage') {
+        renderVocabList();
+    } else if (pageId === 'flashcardPage') {
+        initFlashcard();
+    }
 }
 
-// Phát âm từ vựng
-function speakWord(word) {
-    let utterance = new SpeechSynthesisUtterance(word);
-    utterance.lang = 'en-US';
-    window.speechSynthesis.speak(utterance);
-}
+// 4. LỌC VÀ HIỂN THỊ KHO TỪ VỰNG
+let currentLevelFilter = 'all';
+let currentCategoryFilter = 'all';
 
-// Hiển thị danh sách từ
-function renderVocabGrid() {
-    const grid = document.getElementById('vocabGrid');
-    grid.innerHTML = '';
-    const topicNames = { technology: 'Công nghệ', daily: 'Giao tiếp', business: 'Công sở', education: 'Học tập' };
+function renderVocabList() {
+    const gridContainer = document.getElementById('vocabGrid');
+    const searchInput = document.getElementById('searchInput');
+    const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
 
-    vocabList.forEach(item => {
-        let levelClass = item.level === 'A1-A2' ? 'a1' : item.level === 'B1-B2' ? 'b1' : 'c1';
+    if (!gridContainer) return;
 
-        let cardHTML = `
-            <div class="vocab-card" data-level="${item.level}" data-topic="${item.topic}">
-                <button class="delete-btn" onclick="deleteWord(${item.id})" title="Xóa từ này"><i class="fa-solid fa-trash"></i></button>
-                <div class="badge-container">
-                    <span class="badge topic-tag ${item.topic}">${topicNames[item.topic] || 'Chủ đề'}</span>
-                    <span class="badge level-tag ${levelClass}">${item.level}</span>
-                </div>
-                <div class="card-header">
-                    <span class="word">${item.word}</span>
-                    <button class="audio-btn" onclick="speakWord('${item.word}')"><i class="fa-solid fa-volume-high"></i></button>
-                </div>
-                <span class="phonetic">${item.phonetic}</span>
-                <p class="meaning"><b>Nghĩa:</b> ${item.meaning}</p>
-                <p class="example"><i>Ví dụ:</i> ${item.example}</p>
-            </div>
-        `;
-        grid.insertAdjacentHTML('beforeend', cardHTML);
+    const filteredList = vocabularyList.filter(item => {
+        const matchSearch = item.word.toLowerCase().includes(searchTerm) ||
+            item.meaning.toLowerCase().includes(searchTerm) ||
+            item.ipa.toLowerCase().includes(searchTerm);
+        const matchLevel = (currentLevelFilter === 'all') || (item.level === currentLevelFilter);
+        const matchCategory = (currentCategoryFilter === 'all') || (item.category === currentCategoryFilter);
+        return matchSearch && matchLevel && matchCategory;
     });
 
-    filterVocab();
+    updateStats();
+
+    if (filteredList.length === 0) {
+        gridContainer.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: #64748b; padding: 2rem;">Không tìm thấy từ vựng phù hợp.</p>`;
+        return;
+    }
+
+    gridContainer.innerHTML = filteredList.map(item => `
+        <div class="vocab-card">
+            <div class="card-header">
+                <span class="badge category-badge">${item.category}</span>
+                <span class="badge level-badge ${getLevelClass(item.level)}">${item.level}</span>
+                <button class="delete-btn" onclick="deleteWord(${item.id})" title="Xóa từ"><i class="fa-solid fa-trash"></i></button>
+            </div>
+            <h3 class="word-title">${item.word}</h3>
+            <p class="word-ipa">${item.ipa}</p>
+            <p class="word-meaning"><b>Nghĩa:</b> ${item.meaning}</p>
+            <p class="word-example"><i>Ví dụ:</i> ${item.example}</p>
+            <button class="audio-btn" onclick="speakWord('${item.word}')">
+                <i class="fa-solid fa-volume-high"></i>
+            </button>
+        </div>
+    `).join('');
 }
 
-// Bộ lọc Cấp độ & Chủ đề
-function selectLevel(level) {
-    currentLevel = level;
-    updateActiveButton('.level-btn', event.target);
-    filterVocab();
+function getLevelClass(level) {
+    if (level === 'A1-A2') return 'level-a';
+    if (level === 'B1-B2') return 'level-b';
+    if (level === 'C1-C2') return 'level-c';
+    return '';
 }
 
-function selectTopic(topic) {
-    currentTopic = topic;
-    updateActiveButton('.topic-btn', event.target);
-    filterVocab();
+function updateStats() {
+    const totalElem = document.getElementById('totalCount');
+    const countA = document.getElementById('countA');
+    const countB = document.getElementById('countB');
+    const countC = document.getElementById('countC');
+
+    if (totalElem) totalElem.textContent = vocabularyList.length;
+    if (countA) countA.textContent = vocabularyList.filter(i => i.level === 'A1-A2').length;
+    if (countB) countB.textContent = vocabularyList.filter(i => i.level === 'B1-B2').length;
+    if (countC) countC.textContent = vocabularyList.filter(i => i.level === 'C1-C2').length;
 }
 
-function updateActiveButton(selector, targetButton) {
-    document.querySelectorAll(selector).forEach(btn => btn.classList.remove('active'));
-    targetButton.classList.add('active');
+function filterByLevel(level, btnElement) {
+    currentLevelFilter = level;
+    document.querySelectorAll('.level-filter-btn').forEach(b => b.classList.remove('active'));
+    if (btnElement) btnElement.classList.add('active');
+    renderVocabList();
 }
 
-function filterVocab() {
-    let searchInput = document.getElementById('searchInput').value.toLowerCase();
-    let cards = document.getElementsByClassName('vocab-card');
+function filterByCategory(category, btnElement) {
+    currentCategoryFilter = category;
+    document.querySelectorAll('.cat-filter-btn').forEach(b => b.classList.remove('active'));
+    if (btnElement) btnElement.classList.add('active');
+    renderVocabList();
+}
 
-    for (let card of cards) {
-        let cardLevel = card.getAttribute('data-level');
-        let cardTopic = card.getAttribute('data-topic');
-        let cardText = card.innerText.toLowerCase();
-
-        let matchLevel = (currentLevel === 'all' || cardLevel === currentLevel);
-        let matchTopic = (currentTopic === 'all' || cardTopic === currentTopic);
-        let matchSearch = cardText.includes(searchInput);
-
-        card.style.display = (matchLevel && matchTopic && matchSearch) ? "block" : "none";
+function deleteWord(id) {
+    if (confirm("Bạn có chắc chắn muốn xóa từ này khỏi kho từ vựng?")) {
+        vocabularyList = vocabularyList.filter(item => item.id !== id);
+        saveData();
+        renderVocabList();
     }
 }
 
-// Thêm từ mới & lưu vĩnh viễn
-function addNewWord(event) {
+// 5. THÊM TỪ MỚI
+function handleAddWord(event) {
     event.preventDefault();
 
-    let newEntry = {
+    const wordInput = document.getElementById('inputWord');
+    const ipaInput = document.getElementById('inputIpa');
+    const meaningInput = document.getElementById('inputMeaning');
+    const levelSelect = document.getElementById('selectLevel');
+    const categorySelect = document.getElementById('selectCategory');
+    const exampleInput = document.getElementById('inputExample');
+
+    const newWord = {
         id: Date.now(),
-        word: document.getElementById('newWord').value,
-        phonetic: document.getElementById('newPhonetic').value,
-        meaning: document.getElementById('newMeaning').value,
-        level: document.getElementById('newLevel').value,
-        topic: document.getElementById('newTopic').value,
-        example: document.getElementById('newExample').value
+        word: wordInput.value.trim(),
+        ipa: ipaInput.value.trim() || '/.../',
+        meaning: meaningInput.value.trim(),
+        level: levelSelect.value,
+        category: categorySelect.value,
+        example: exampleInput.value.trim() || 'No example available.'
     };
 
-    vocabList.push(newEntry);
-    localStorage.setItem('myVocabData', JSON.stringify(vocabList));
+    vocabularyList.unshift(newWord);
+    saveData();
 
-    renderVocabGrid();
-    updateStats();
-    updateFlashcardUI();
-
-    document.getElementById('vocabForm').reset();
-    alert('Đã thêm từ mới vào kho thành công!');
+    alert("🎉 Đã thêm từ mới vào kho từ vựng thành công!");
+    document.getElementById('addWordForm').reset();
+    switchPage('vocabPage', null);
 }
 
-// Xóa từ vựng
-function deleteWord(id) {
-    if (confirm('Bạn có chắc muốn xóa từ này không?')) {
-        vocabList = vocabList.filter(item => item.id !== id);
-        localStorage.setItem('myVocabData', JSON.stringify(vocabList));
-        renderVocabGrid();
-        updateStats();
-        updateFlashcardUI();
-    }
+// 6. FLASHCARD 3D
+let currentFlashcardIndex = 0;
+let isFlipped = false;
+
+function initFlashcard() {
+    if (vocabularyList.length === 0) return;
+    currentFlashcardIndex = 0;
+    isFlipped = false;
+    showFlashcard();
 }
 
-// Thống kê
-function updateStats() {
-    document.getElementById('totalCount').innerText = vocabList.length;
-    document.getElementById('a1Count').innerText = vocabList.filter(i => i.level === 'A1-A2').length;
-    document.getElementById('b1Count').innerText = vocabList.filter(i => i.level === 'B1-B2').length;
-    document.getElementById('c1Count').innerText = vocabList.filter(i => i.level === 'C1-C2').length;
+function showFlashcard() {
+    const card = document.getElementById('flashcard3D');
+    if (!card || vocabularyList.length === 0) return;
+
+    card.classList.remove('flipped');
+    isFlipped = false;
+
+    const currentItem = vocabularyList[currentFlashcardIndex];
+
+    document.getElementById('flashLevel').textContent = currentItem.level;
+    document.getElementById('flashWordFront').textContent = currentItem.word;
+    document.getElementById('flashWordBack').textContent = currentItem.word;
+    document.getElementById('flashIpa').textContent = currentItem.ipa;
+    document.getElementById('flashMeaning').textContent = currentItem.meaning;
+    document.getElementById('flashExample').textContent = currentItem.example;
 }
 
-// Flashcard 3D
 function flipCard() {
-    document.getElementById('flashcard').classList.toggle('flipped');
-}
-
-function updateFlashcardUI() {
-    if (vocabList.length === 0) return;
-    let item = vocabList[currentFlashcardIndex];
-
-    document.getElementById('fcLevel').innerText = item.level;
-    document.getElementById('fcWord').innerText = item.word;
-    document.getElementById('fcMeaning').innerText = item.meaning;
-    document.getElementById('fcPhonetic').innerText = item.phonetic;
-    document.getElementById('fcExample').innerText = item.example || '';
-
-    document.getElementById('flashcard').classList.remove('flipped');
+    const card = document.getElementById('flashcard3D');
+    if (card) {
+        card.classList.toggle('flipped');
+        isFlipped = !isFlipped;
+    }
 }
 
 function nextCard() {
-    currentFlashcardIndex = (currentFlashcardIndex + 1) % vocabList.length;
-    updateFlashcardUI();
+    if (vocabularyList.length === 0) return;
+    currentFlashcardIndex = (currentFlashcardIndex + 1) % vocabularyList.length;
+    showFlashcard();
 }
 
 function prevCard() {
-    currentFlashcardIndex = (currentFlashcardIndex - 1 + vocabList.length) % vocabList.length;
-    updateFlashcardUI();
+    if (vocabularyList.length === 0) return;
+    currentFlashcardIndex = (currentFlashcardIndex - 1 + vocabularyList.length) % vocabularyList.length;
+    showFlashcard();
 }
 
-function speakCurrentFlashcard() {
-    let item = vocabList[currentFlashcardIndex];
-    speakWord(item.word);
+// 7. PHÁT ÂM AUDIO CHUẨN MỸ
+function speakWord(text) {
+    const wordToSpeak = text || (vocabularyList[currentFlashcardIndex] ? vocabularyList[currentFlashcardIndex].word : '');
+    if ('speechSynthesis' in window && wordToSpeak) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(wordToSpeak);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.9;
+        window.speechSynthesis.speak(utterance);
+    } else {
+        alert("Trình duyệt không hỗ trợ phát âm.");
+    }
 }
+
+// 8. ĐĂNG KÝ BẢNG GIÁ PRO & MODAL THANH TOÁN
+let selectedPlanData = { name: '', price: '' };
+
+function selectPlan(planName, price) {
+    selectedPlanData = { name: planName, price: price };
+    document.getElementById('modalPlanName').textContent = `Bạn đã chọn: ${planName}`;
+    document.getElementById('modalPlanPrice').textContent = price;
+    document.getElementById('paymentModal').style.display = 'flex';
+}
+
+function closePaymentModal() {
+    document.getElementById('paymentModal').style.display = 'none';
+}
+
+function handleConfirmPayment(event) {
+    event.preventDefault();
+
+    const name = document.getElementById('buyerName').value.trim();
+    const email = document.getElementById('buyerEmail').value.trim();
+    const method = document.querySelector('input[name="paymentMethod"]:checked').value;
+
+    const payBtn = document.querySelector('.btn-pay');
+    payBtn.disabled = true;
+    payBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang xử lý giao dịch...`;
+
+    setTimeout(() => {
+        alert(`🎉 THÀNH CÔNG!\nCảm ơn ${name} đã đăng ký thành công ${selectedPlanData.name}!\n\n📧 Mã kích hoạt đã được gửi tới: ${email}\n💳 Phương thức thanh toán: ${method}`);
+
+        document.getElementById('paymentForm').reset();
+        payBtn.disabled = false;
+        payBtn.innerHTML = `<i class="fa-solid fa-lock"></i> Xác Nhận Thanh Toán`;
+        closePaymentModal();
+    }, 1200);
+}
+
+// DOM LOADED
+document.addEventListener('DOMContentLoaded', () => {
+    loadData();
+    renderVocabList();
+
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) searchInput.addEventListener('input', renderVocabList);
+
+    const addForm = document.getElementById('addWordForm');
+    if (addForm) addForm.addEventListener('submit', handleAddWord);
+});
