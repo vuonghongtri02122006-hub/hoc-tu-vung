@@ -1,281 +1,305 @@
-// 1. DANH SÁCH TỪ VỰNG MẪU BAN ĐẦU
 const initialVocabulary = [
-    { id: 1, word: "Vocabulary", ipa: "/vəˈkæb.jə.lər.i/", meaning: "Từ vựng", example: "Reading improves your vocabulary.", category: "Giao tiếp", level: "A1-A2" },
-    { id: 2, word: "Developer", ipa: "/dɪˈvel.ə.pər/", meaning: "Lập trình viên", example: "She is a senior web developer.", category: "Công nghệ", level: "B1-B2" },
-    { id: 3, word: "Algorithm", ipa: "/ˈæl.ɡə.rɪ.ðəm/", meaning: "Thuật toán", example: "Complex algorithms process big data.", category: "Công nghệ", level: "C1-C2" },
-    { id: 4, word: "Negotiation", ipa: "/nəˌɡəʊ.ʃiˈeɪ.ʃən/", meaning: "Đàm phán", example: "The negotiation was successful.", category: "Công sở", level: "B1-B2" },
-    { id: 5, word: "Perseverance", ipa: "/ˌpɜː.sɪˈvɪə.rəns/", meaning: "Sự kiên trì", example: "Success requires hard work and perseverance.", category: "Giao tiếp", level: "C1-C2" },
-    { id: 6, word: "Knowledge", ipa: "/ˈnɒl.ɪdʒ/", meaning: "Kiến thức", example: "Books are a great source of knowledge.", category: "Học tập", level: "A1-A2" },
-    { id: 7, word: "Database", ipa: "/ˈdeɪ.tə.beɪs/", meaning: "Cơ sở dữ liệu", example: "Data is stored safely in the database.", category: "Công nghệ", level: "B1-B2" },
-    { id: 8, word: "Efficiency", ipa: "/ɪˈfɪʃ.ən.si/", meaning: "Hiệu suất", example: "Automation improves work efficiency.", category: "Công sở", level: "C1-C2" },
-    { id: 9, word: "Schedule", ipa: "/ˈʃed.juːl/", meaning: "Lịch trình", example: "Check your daily schedule carefully.", category: "Học tập", level: "A1-A2" },
-    { id: 10, word: "Innovation", ipa: "/ˌɪn.əˈveɪ.ʃən/", meaning: "Sự đổi mới", example: "Innovation drives growth in business.", category: "Công nghệ", level: "C1-C2" }
+    { id: 1, word: "Vocabulary", ipa: "/vəˈkæb.jə.lər.i/", meaning: "Từ vựng", level: "A1-A2" },
+    { id: 2, word: "Developer", ipa: "/dɪˈvel.ə.pər/", meaning: "Lập trình viên", level: "B1-B2" },
+    { id: 3, word: "Algorithm", ipa: "/ˈæl.ɡə.rɪ.ðəm/", meaning: "Thuật toán", level: "C1-C2" },
+    { id: 4, word: "Innovation", ipa: "/ˌɪn.əˈveɪ.ʃən/", meaning: "Sự đổi mới", level: "B1-B2" },
+    { id: 5, word: "Database", ipa: "/ˈdeɪ.tə.beɪs/", meaning: "Cơ sở dữ liệu", level: "B1-B2" }
+];
+
+const groupMembers = [
+    { name: "Vương Hồng Trí (Trưởng Nhóm)", xp: 1250, petLevel: "Cấp 4: Cyber Dragon 🐉" },
+    { name: "Thành Viên 2", xp: 950, petLevel: "Cấp 3: Cyber Robot 🤖" },
+    { name: "Thành Viên 3", xp: 800, petLevel: "Cấp 2: Quái Vật Nhỏ 👾" },
+    { name: "Thành Viên 4", xp: 650, petLevel: "Cấp 2: Quái Vật Nhỏ 👾" },
+    { name: "Thành Viên 5", xp: 500, petLevel: "Cấp 1: Trứng Cyber 🥚" },
+    { name: "Thành Viên 6", xp: 420, petLevel: "Cấp 1: Trứng Cyber 🥚" },
+    { name: "Thành Viên 7", xp: 350, petLevel: "Cấp 1: Trứng Cyber 🥚" }
 ];
 
 let vocabularyList = [];
+let userXp = 150;
+let bossHp = 100;
+let currentFlashcardIndex = 0;
+let currentBossQuiz = null;
+let selectedPlanName = "";
 
-// 2. TẢI DỮ LIỆU TỪ LOCALSTORAGE
+function playSound(type) {
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+
+        if (type === 'hit') {
+            osc.frequency.setValueAtTime(160, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(40, ctx.currentTime + 0.2);
+            gain.gain.setValueAtTime(0.3, ctx.currentTime);
+            osc.start(); osc.stop(ctx.currentTime + 0.2);
+        } else if (type === 'win') {
+            osc.frequency.setValueAtTime(400, ctx.currentTime);
+            osc.frequency.setValueAtTime(600, ctx.currentTime + 0.12);
+            gain.gain.setValueAtTime(0.25, ctx.currentTime);
+            osc.start(); osc.stop(ctx.currentTime + 0.3);
+        }
+    } catch (e) { }
+}
+
 function loadData() {
-    const storedData = localStorage.getItem('vocab_master_data');
-    if (storedData) {
-        vocabularyList = JSON.parse(storedData);
-    } else {
-        vocabularyList = [...initialVocabulary];
-        saveData();
-    }
-}
-
-function saveData() {
-    localStorage.setItem('vocab_master_data', JSON.stringify(vocabularyList));
-}
-
-// 3. LOGIC CHUYỂN TRANG MƯỢT MÀ
-function switchPage(pageId, element) {
-    const pages = document.querySelectorAll('main > div');
-    pages.forEach(page => page.style.display = 'none');
-
-    const activePage = document.getElementById(pageId);
-    if (activePage) {
-        activePage.style.display = 'block';
-    }
-
-    const navBtns = document.querySelectorAll('.nav-btn');
-    navBtns.forEach(btn => btn.classList.remove('active'));
-
-    if (element) {
-        element.classList.add('active');
-    } else {
-        const targetBtn = Array.from(navBtns).find(btn => btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(pageId));
-        if (targetBtn) targetBtn.classList.add('active');
-    }
-
-    if (pageId === 'vocabPage') {
-        renderVocabList();
-    } else if (pageId === 'flashcardPage') {
-        initFlashcard();
-    }
-}
-
-// 4. LỌC VÀ HIỂN THỊ KHO TỪ VỰNG
-let currentLevelFilter = 'all';
-let currentCategoryFilter = 'all';
-
-function renderVocabList() {
-    const gridContainer = document.getElementById('vocabGrid');
-    const searchInput = document.getElementById('searchInput');
-    const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
-
-    if (!gridContainer) return;
-
-    const filteredList = vocabularyList.filter(item => {
-        const matchSearch = item.word.toLowerCase().includes(searchTerm) ||
-            item.meaning.toLowerCase().includes(searchTerm) ||
-            item.ipa.toLowerCase().includes(searchTerm);
-        const matchLevel = (currentLevelFilter === 'all') || (item.level === currentLevelFilter);
-        const matchCategory = (currentCategoryFilter === 'all') || (item.category === currentCategoryFilter);
-        return matchSearch && matchLevel && matchCategory;
-    });
-
+    const stored = localStorage.getItem('vocab_cyber_data');
+    vocabularyList = stored ? JSON.parse(stored) : [...initialVocabulary];
+    renderLeaderboard();
     updateStats();
-
-    if (filteredList.length === 0) {
-        gridContainer.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: #64748b; padding: 2rem;">Không tìm thấy từ vựng phù hợp.</p>`;
-        return;
-    }
-
-    gridContainer.innerHTML = filteredList.map(item => `
-        <div class="vocab-card">
-            <div class="card-header">
-                <span class="badge category-badge">${item.category}</span>
-                <span class="badge level-badge ${getLevelClass(item.level)}">${item.level}</span>
-                <button class="delete-btn" onclick="deleteWord(${item.id})" title="Xóa từ"><i class="fa-solid fa-trash"></i></button>
-            </div>
-            <h3 class="word-title">${item.word}</h3>
-            <p class="word-ipa">${item.ipa}</p>
-            <p class="word-meaning"><b>Nghĩa:</b> ${item.meaning}</p>
-            <p class="word-example"><i>Ví dụ:</i> ${item.example}</p>
-            <button class="audio-btn" onclick="speakWord('${item.word}')">
-                <i class="fa-solid fa-volume-high"></i>
-            </button>
-        </div>
-    `).join('');
-}
-
-function getLevelClass(level) {
-    if (level === 'A1-A2') return 'level-a';
-    if (level === 'B1-B2') return 'level-b';
-    if (level === 'C1-C2') return 'level-c';
-    return '';
+    startCountdown();
+    init3DTilt();
 }
 
 function updateStats() {
-    const totalElem = document.getElementById('totalCount');
-    const countA = document.getElementById('countA');
-    const countB = document.getElementById('countB');
-    const countC = document.getElementById('countC');
-
-    if (totalElem) totalElem.textContent = vocabularyList.length;
-    if (countA) countA.textContent = vocabularyList.filter(i => i.level === 'A1-A2').length;
-    if (countB) countB.textContent = vocabularyList.filter(i => i.level === 'B1-B2').length;
-    if (countC) countC.textContent = vocabularyList.filter(i => i.level === 'C1-C2').length;
+    document.getElementById('userXp').textContent = `${userXp} XP`;
+    updatePetEvolution();
 }
 
-function filterByLevel(level, btnElement) {
-    currentLevelFilter = level;
-    document.querySelectorAll('.level-filter-btn').forEach(b => b.classList.remove('active'));
-    if (btnElement) btnElement.classList.add('active');
-    renderVocabList();
-}
+function updatePetEvolution() {
+    const avatar = document.getElementById('petAvatar');
+    const name = document.getElementById('petName');
+    const desc = document.getElementById('petDesc');
+    const bar = document.getElementById('petProgressBar');
 
-function filterByCategory(category, btnElement) {
-    currentCategoryFilter = category;
-    document.querySelectorAll('.cat-filter-btn').forEach(b => b.classList.remove('active'));
-    if (btnElement) btnElement.classList.add('active');
-    renderVocabList();
-}
-
-function deleteWord(id) {
-    if (confirm("Bạn có chắc chắn muốn xóa từ này khỏi kho từ vựng?")) {
-        vocabularyList = vocabularyList.filter(item => item.id !== id);
-        saveData();
-        renderVocabList();
+    if (userXp < 300) {
+        avatar.textContent = "🥚";
+        name.textContent = "Trứng Cyber (Cấp 1)";
+        desc.textContent = `Cần ${300 - userXp} XP nữa để Ấp Trứng Tiến Hóa!`;
+        bar.style.width = `${(userXp / 300) * 100}%`;
+    } else if (userXp < 800) {
+        avatar.textContent = "👾";
+        name.textContent = "Quái Vật Cyber (Cấp 2)";
+        desc.textContent = `Cần ${800 - userXp} XP nữa để Tiến Hóa Robot!`;
+        bar.style.width = `${((userXp - 300) / 500) * 100}%`;
+    } else {
+        avatar.textContent = "🐉";
+        name.textContent = "Rồng Huyền Thoại Cyber (Cấp Max)";
+        desc.textContent = "Linh vật đạt cấp độ tối thượng!";
+        bar.style.width = "100%";
     }
 }
 
-// 5. THÊM TỪ MỚI
-function handleAddWord(event) {
-    event.preventDefault();
+function switchPage(pageId, element) {
+    document.querySelectorAll('main > div').forEach(page => page.style.display = 'none');
+    const activePage = document.getElementById(pageId);
+    if (activePage) activePage.style.display = 'block';
 
-    const wordInput = document.getElementById('inputWord');
-    const ipaInput = document.getElementById('inputIpa');
-    const meaningInput = document.getElementById('inputMeaning');
-    const levelSelect = document.getElementById('selectLevel');
-    const categorySelect = document.getElementById('selectCategory');
-    const exampleInput = document.getElementById('inputExample');
+    document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+    if (element) element.classList.add('active');
 
-    const newWord = {
-        id: Date.now(),
-        word: wordInput.value.trim(),
-        ipa: ipaInput.value.trim() || '/.../',
-        meaning: meaningInput.value.trim(),
-        level: levelSelect.value,
-        category: categorySelect.value,
-        example: exampleInput.value.trim() || 'No example available.'
-    };
-
-    vocabularyList.unshift(newWord);
-    saveData();
-
-    alert("🎉 Đã thêm từ mới vào kho từ vựng thành công!");
-    document.getElementById('addWordForm').reset();
-    switchPage('vocabPage', null);
+    if (pageId === 'bossPage') initBossBattle();
+    if (pageId === 'flashcardPage') initFlashcard();
 }
 
-// 6. FLASHCARD 3D
-let currentFlashcardIndex = 0;
-let isFlipped = false;
+function init3DTilt() {
+    const card = document.getElementById('flashcard3D');
+    if (!card) return;
+
+    card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+        card.style.transform = `rotateY(${x / 15}deg) rotateX(${-y / 15}deg)`;
+    });
+
+    card.addEventListener('mouseleave', () => {
+        card.style.transform = 'rotateY(0deg) rotateX(0deg)';
+    });
+}
 
 function initFlashcard() {
-    if (vocabularyList.length === 0) return;
     currentFlashcardIndex = 0;
-    isFlipped = false;
     showFlashcard();
 }
 
 function showFlashcard() {
-    const card = document.getElementById('flashcard3D');
-    if (!card || vocabularyList.length === 0) return;
+    const item = vocabularyList[currentFlashcardIndex];
+    if (!item) return;
 
-    card.classList.remove('flipped');
-    isFlipped = false;
+    document.getElementById('flashLevel').textContent = `LEVEL: ${item.level}`;
+    document.getElementById('flashWordFront').textContent = item.word;
+    document.getElementById('flashWordBack').textContent = item.word;
+    document.getElementById('flashIpa').textContent = item.ipa;
+    document.getElementById('flashMeaning').textContent = item.meaning;
+    document.getElementById('flashcard3D').classList.remove('flipped');
 
-    const currentItem = vocabularyList[currentFlashcardIndex];
-
-    document.getElementById('flashLevel').textContent = currentItem.level;
-    document.getElementById('flashWordFront').textContent = currentItem.word;
-    document.getElementById('flashWordBack').textContent = currentItem.word;
-    document.getElementById('flashIpa').textContent = currentItem.ipa;
-    document.getElementById('flashMeaning').textContent = currentItem.meaning;
-    document.getElementById('flashExample').textContent = currentItem.example;
+    document.getElementById('cyberProgressBar').style.width = `${((currentFlashcardIndex + 1) / vocabularyList.length) * 100}%`;
 }
 
-function flipCard() {
-    const card = document.getElementById('flashcard3D');
-    if (card) {
-        card.classList.toggle('flipped');
-        isFlipped = !isFlipped;
+function flipCard() { document.getElementById('flashcard3D').classList.toggle('flipped'); }
+function nextCard() { currentFlashcardIndex = (currentFlashcardIndex + 1) % vocabularyList.length; showFlashcard(); }
+function prevCard() { currentFlashcardIndex = (currentFlashcardIndex - 1 + vocabularyList.length) % vocabularyList.length; showFlashcard(); }
+
+function markMastered() {
+    userXp += 50;
+    updateStats();
+    playSound('win');
+    confetti({ particleCount: 100, spread: 70 });
+    nextCard();
+}
+
+function initBossBattle() {
+    bossHp = 100;
+    document.getElementById('bossHpBar').style.width = '100%';
+    nextBossQuiz();
+}
+
+function nextBossQuiz() {
+    if (vocabularyList.length === 0) return;
+    const randomWord = vocabularyList[Math.floor(Math.random() * vocabularyList.length)];
+    currentBossQuiz = randomWord;
+
+    document.getElementById('quizWord').textContent = randomWord.word;
+
+    let options = [randomWord.meaning];
+    while (options.length < 4 && options.length < vocabularyList.length) {
+        let randMeaning = vocabularyList[Math.floor(Math.random() * vocabularyList.length)].meaning;
+        if (!options.includes(randMeaning)) options.push(randMeaning);
     }
+    options.sort(() => Math.random() - 0.5);
+
+    const container = document.getElementById('quizOptions');
+    container.innerHTML = options.map(opt => `
+        <button class="btn-option" onclick="checkBossAnswer('${opt}')">${opt}</button>
+    `).join('');
 }
 
-function nextCard() {
-    if (vocabularyList.length === 0) return;
-    currentFlashcardIndex = (currentFlashcardIndex + 1) % vocabularyList.length;
-    showFlashcard();
-}
+function checkBossAnswer(selectedMeaning) {
+    const bossSprite = document.getElementById('bossSprite');
+    if (selectedMeaning === currentBossQuiz.meaning) {
+        playSound('hit');
+        bossHp -= 25;
+        if (bossHp < 0) bossHp = 0;
+        document.getElementById('bossHpBar').style.width = `${bossHp}%`;
 
-function prevCard() {
-    if (vocabularyList.length === 0) return;
-    currentFlashcardIndex = (currentFlashcardIndex - 1 + vocabularyList.length) % vocabularyList.length;
-    showFlashcard();
-}
+        bossSprite.style.transform = 'scale(1.3) rotate(15deg)';
+        setTimeout(() => bossSprite.style.transform = 'none', 200);
 
-// 7. PHÁT ÂM AUDIO CHUẨN MỸ
-function speakWord(text) {
-    const wordToSpeak = text || (vocabularyList[currentFlashcardIndex] ? vocabularyList[currentFlashcardIndex].word : '');
-    if ('speechSynthesis' in window && wordToSpeak) {
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(wordToSpeak);
-        utterance.lang = 'en-US';
-        utterance.rate = 0.9;
-        window.speechSynthesis.speak(utterance);
+        userXp += 30;
+        updateStats();
+
+        if (bossHp === 0) {
+            playSound('win');
+            confetti({ particleCount: 150, spread: 100 });
+            alert("🎉 XUẤT SẮC! Bạn đã tiêu diệt Trùm Từ Vựng! (+100 XP Bonus)");
+            userXp += 100;
+            updateStats();
+            initBossBattle();
+        } else {
+            nextBossQuiz();
+        }
     } else {
-        alert("Trình duyệt không hỗ trợ phát âm.");
+        alert(`❌ SAI RỒI! Đáp án đúng của "${currentBossQuiz.word}" là: ${currentBossQuiz.meaning}`);
+        nextBossQuiz();
     }
 }
 
-// 8. ĐĂNG KÝ BẢNG GIÁ PRO & MODAL THANH TOÁN
-let selectedPlanData = { name: '', price: '' };
+let currentAngle = 0;
+function spinWheel() {
+    const wheel = document.getElementById('wheel');
+    currentAngle += Math.floor(Math.random() * 360) + 1440;
+    wheel.style.transform = `rotate(${currentAngle}deg)`;
 
-function selectPlan(planName, price) {
-    selectedPlanData = { name: planName, price: price };
-    document.getElementById('modalPlanName').textContent = `Bạn đã chọn: ${planName}`;
-    document.getElementById('modalPlanPrice').textContent = price;
+    setTimeout(() => {
+        const item = vocabularyList[Math.floor(Math.random() * vocabularyList.length)];
+        document.getElementById('resWord').textContent = item.word;
+        document.getElementById('resIpa').textContent = item.ipa;
+        document.getElementById('resMeaning').textContent = item.meaning;
+        document.getElementById('wheelResult').style.display = 'block';
+        playSound('win');
+        confetti({ particleCount: 80, spread: 60 });
+    }, 3000);
+}
+
+function speakText(text) {
+    if ('speechSynthesis' in window && text) {
+        window.speechSynthesis.cancel();
+        const msg = new SpeechSynthesisUtterance(text);
+        msg.lang = 'en-US';
+        window.speechSynthesis.speak(msg);
+    }
+}
+function speakCurrentWord() { speakText(vocabularyList[currentFlashcardIndex]?.word); }
+
+function openPayment(planName, price) {
+    selectedPlanName = planName;
+    document.getElementById('modalPlanName').textContent = `Đang Đăng Ký: ${planName} (${price})`;
     document.getElementById('paymentModal').style.display = 'flex';
 }
 
-function closePaymentModal() {
+function closePayment() {
     document.getElementById('paymentModal').style.display = 'none';
 }
 
-function handleConfirmPayment(event) {
+function confirmPayment(event) {
     event.preventDefault();
-
     const name = document.getElementById('buyerName').value.trim();
     const email = document.getElementById('buyerEmail').value.trim();
-    const method = document.querySelector('input[name="paymentMethod"]:checked').value;
+    const method = document.getElementById('payMethod').value;
+    const btn = document.getElementById('btnPaySubmit');
 
-    const payBtn = document.querySelector('.btn-pay');
-    payBtn.disabled = true;
-    payBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang xử lý giao dịch...`;
+    btn.disabled = true;
+    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ĐANG GỬI MÃ VIP QUA EMAIL...`;
 
     setTimeout(() => {
-        alert(`🎉 THÀNH CÔNG!\nCảm ơn ${name} đã đăng ký thành công ${selectedPlanData.name}!\n\n📧 Mã kích hoạt đã được gửi tới: ${email}\n💳 Phương thức thanh toán: ${method}`);
+        playSound('win');
+        confetti({ particleCount: 150, spread: 90 });
+        alert(`🎉 THÀNH CÔNG!\nCảm ơn ${name} đã kích hoạt gói: ${selectedPlanName}!\n\n📧 Mã kích hoạt VIP đã gửi tới hòm thư: ${email}\n💳 Phương thức: ${method}`);
 
-        document.getElementById('paymentForm').reset();
-        payBtn.disabled = false;
-        payBtn.innerHTML = `<i class="fa-solid fa-lock"></i> Xác Nhận Thanh Toán`;
-        closePaymentModal();
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fa-solid fa-lock"></i> XÁC NHẬN VÀ GỬI EMAIL TỰ ĐỘNG`;
+        closePayment();
     }, 1200);
 }
 
-// DOM LOADED
-document.addEventListener('DOMContentLoaded', () => {
-    loadData();
-    renderVocabList();
+function renderLeaderboard() {
+    const tbody = document.getElementById('leaderboardBody');
+    if (!tbody) return;
+    tbody.innerHTML = groupMembers.map((m, index) => `
+        <tr>
+            <td><b>#${index + 1}</b></td>
+            <td>${m.name}</td>
+            <td>${m.petLevel}</td>
+            <td><b style="color:#00f0ff">${m.xp} XP</b></td>
+        </tr>
+    `).join('');
+}
 
-    const searchInput = document.getElementById('searchInput');
-    if (searchInput) searchInput.addEventListener('input', renderVocabList);
+function startCountdown() {
+    let duration = 15 * 60;
+    const timerElem = document.getElementById('cyberTimer');
+    setInterval(() => {
+        let mins = Math.floor(duration / 60);
+        let secs = duration % 60;
+        if (timerElem) timerElem.textContent = `${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        if (duration > 0) duration--;
+    }, 1000);
+}
 
-    const addForm = document.getElementById('addWordForm');
-    if (addForm) addForm.addEventListener('submit', handleAddWord);
-});
+const canvas = document.getElementById('bgCanvas');
+const ctx = canvas.getContext('2d');
+let particles = [];
+function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+window.addEventListener('resize', resizeCanvas); resizeCanvas();
+
+for (let i = 0; i < 45; i++) {
+    particles.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, radius: Math.random() * 2, vx: (Math.random() - 0.5) * 0.5, vy: (Math.random() - 0.5) * 0.5 });
+}
+
+function animateBg() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#00f0ff';
+    particles.forEach(p => {
+        p.x += p.vx; p.y += p.vy;
+        if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); ctx.fill();
+    });
+    requestAnimationFrame(animateBg);
+}
+animateBg();
+
+document.addEventListener('DOMContentLoaded', loadData);

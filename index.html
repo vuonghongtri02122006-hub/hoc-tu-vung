@@ -1,310 +1,255 @@
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VocabMaster - Ứng Dụng Học Từ Vựng Tiếng Anh</title>
+    <title>VocabCyber 3D - EdTech thế hệ mới cho sinh viên</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- Thư viện EmailJS gửi email thực tế -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
-        (function () {
-            emailjs.init("YOUR_PUBLIC_KEY");
-        })();
+       (function(){ emailjs.init("YOUR_PUBLIC_KEY"); })();
     </script>
 </head>
-
 <body>
+    <canvas id="bgCanvas"></canvas>
 
-    <!-- Thanh Navigation -->
+    <!-- NAVBAR CYBER -->
     <nav class="navbar">
         <div class="nav-container">
             <div class="logo">
-                <i class="fa-solid fa-graduation-cap"></i> <span>Vocab<b>Master</b></span>
+                <i class="fa-solid fa-atom fa-spin"></i> <span>VOCAB<b>CYBER</b></span>
             </div>
             <ul class="nav-links">
-                <li><a href="javascript:void(0)" class="nav-btn active" onclick="switchPage('homePage', this)"><i
-                            class="fa-solid fa-house"></i> Trang Chủ</a></li>
-                <li><a href="javascript:void(0)" class="nav-btn" onclick="switchPage('vocabPage', this)"><i
-                            class="fa-solid fa-book"></i> Từ Vựng</a></li>
-                <li><a href="javascript:void(0)" class="nav-btn" onclick="switchPage('flashcardPage', this)"><i
-                            class="fa-solid fa-clone"></i> Flashcard 3D</a></li>
-                <li><a href="javascript:void(0)" class="nav-btn" onclick="switchPage('addwordPage', this)"><i
-                            class="fa-solid fa-circle-plus"></i> Thêm Từ Mới</a></li>
-                <li><a href="javascript:void(0)" class="nav-btn" onclick="switchPage('pricingPage', this)"><i
-                            class="fa-solid fa-tags"></i> Bảng Giá Pro</a></li>
+                <li><a href="javascript:void(0)" class="nav-btn active" onclick="switchPage('homePage', this)"><i class="fa-solid fa-gamepad"></i> Trạm Chính</a></li>
+                <li><a href="javascript:void(0)" class="nav-btn" onclick="switchPage('bossPage', this)"><i class="fa-solid fa-dragon"></i> Đấu Boss ⚔️</a></li>
+                <li><a href="javascript:void(0)" class="nav-btn" onclick="switchPage('wheelPage', this)"><i class="fa-solid fa-dharmachakra"></i> Vòng Quay</a></li>
+                <li><a href="javascript:void(0)" class="nav-btn" onclick="switchPage('flashcardPage', this)"><i class="fa-solid fa-cube"></i> Thẻ 3D Tilt</a></li>
+                <li><a href="javascript:void(0)" class="nav-btn" onclick="switchPage('leaderboardPage', this)"><i class="fa-solid fa-trophy"></i> BXH Nhóm</a></li>
+                <li><a href="javascript:void(0)" class="nav-btn" onclick="switchPage('pricingPage', this)"><i class="fa-solid fa-crown"></i> Gói Pro VIP</a></li>
             </ul>
         </div>
     </nav>
 
     <main>
-        <!-- 1. TRANG CHỦ -->
+        <!-- 1. TRANG CHỦ & SOCIAL PROOF -->
         <div id="homePage" style="display: block;">
-            <header class="hero">
-                <h1>Nâng Tầm Từ Vựng Tiếng Anh Mỗi Ngày</h1>
-                <p>Phương pháp học từ vựng thông minh qua thẻ ghi nhớ Flashcard 3D và hệ thống phân loại chuẩn quốc tế
-                </p>
+            <header class="cyber-hero">
+                <div class="glitch-title">VOCABCYBER 3D</div>
+                <p class="cyber-sub">Nền Tảng Luyện Từ Vựng Đột Phá Dành Riêng Cho Sinh Viên Việt Nam</p>
+                
+                <div class="pet-card">
+                    <div class="pet-avatar" id="petAvatar">🥚</div>
+                    <div class="pet-info">
+                        <h3 id="petName">Trứng Cyber (Cấp 1)</h3>
+                        <p id="petDesc">Tích lũy 300 XP để Ấp Trứng Tiến Hóa Linh Vật!</p>
+                        <div class="pet-progress-bg">
+                            <div id="petProgressBar" class="pet-progress-bar" style="width: 20%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="dash-card neon-blue">
+                        <i class="fa-solid fa-bolt"></i>
+                        <h3 id="userXp">150 XP</h3>
+                        <p>Năng Lượng Học Tập</p>
+                    </div>
+                    <div class="dash-card neon-purple">
+                        <i class="fa-solid fa-fire-flame-curved"></i>
+                        <h3 id="streakDays">5 Ngày</h3>
+                        <p>Chuỗi Thắng 連勝</p>
+                    </div>
+                    <div class="dash-card neon-green">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <h3 id="userHp">100 HP</h3>
+                        <p>Máu Người Chơi</p>
+                    </div>
+                </div>
+
+                <!-- SOCIAL PROOF BANNER -->
+                <div class="social-proof-box">
+                    <div class="proof-item"><i class="fa-solid fa-users"></i> <span><b>+12.000</b> Sinh viên tin dùng</span></div>
+                    <div class="proof-item"><i class="fa-solid fa-star"></i> <span><b>4.9/5</b> Đánh giá trải nghiệm</span></div>
+                    <div class="proof-item"><i class="fa-solid fa-fire"></i> <span><b>98%</b> Tăng phản xạ từ vựng</span></div>
+                </div>
+
                 <div class="hero-btns">
-                    <button class="btn btn-primary" onclick="switchPage('vocabPage', null)">Khám Phá Từ Vựng →</button>
-                    <button class="btn btn-secondary" onclick="switchPage('flashcardPage', null)">Học Qua Flashcard
-                        3D</button>
+                    <button class="btn btn-cyber-danger" onclick="switchPage('bossPage', null)"><i class="fa-solid fa-dragon"></i> VÀO ĐẤU BOSS NGAY ⚔️</button>
+                    <button class="btn btn-cyber-primary" onclick="switchPage('flashcardPage', null)"><i class="fa-solid fa-cube"></i> THỬ THẺ 3D HOLOGRAM</button>
                 </div>
             </header>
-
-            <section class="features">
-                <div class="feature-card">
-                    <i class="fa-solid fa-layer-group"></i>
-                    <h3>Phân Cấp Độ Rõ Ràng</h3>
-                    <p>Chia từ vựng theo trình độ A1-A2, B1-B2 và C1-C2 giúp bạn nâng trình từng bước.</p>
-                </div>
-                <div class="feature-card">
-                    <i class="fa-solid fa-volume-high"></i>
-                    <h3>Phát Âm Chuẩn Mỹ</h3>
-                    <p>Nghe giọng đọc chuẩn bản ngữ cho từng từ vựng chỉ với 1 cú click.</p>
-                </div>
-                <div class="feature-card">
-                    <i class="fa-solid fa-floppy-disk"></i>
-                    <h3>Lưu Trữ Tự Động</h3>
-                    <p>Tự do thêm từ mới của riêng bạn, dữ liệu được lưu vĩnh viễn trên trình duyệt.</p>
-                </div>
-            </section>
         </div>
 
-        <!-- 2. TRANG KHO TỪ VỰNG -->
-        <div id="vocabPage" style="display: none;">
-            <h2><i class="fa-solid fa-book"></i> Kho Từ Vựng Tiếng Anh</h2>
-
-            <div class="stats-bar">
-                <span><i class="fa-solid fa-list-check"></i> Tổng từ: <b id="totalCount">0</b></span>
-                <span>🟢 A1-A2: <b id="countA">0</b></span>
-                <span>🟡 B1-B2: <b id="countB">0</b></span>
-                <span>🔴 C1-C2: <b id="countC">0</b></span>
+        <!-- 2. TRANG ĐẤU BOSS -->
+        <div id="bossPage" style="display: none;">
+            <div class="boss-arena">
+                <div class="boss-header">
+                    <h2><i class="fa-solid fa-dragon"></i> CHIẾN TRƯỜNG DIỆT BOSS TỪ VỰNG</h2>
+                    <p>Chọn đúng nghĩa tiếng Việt để xả đòn tấn công Boss!</p>
+                </div>
+                <div class="boss-box" id="bossBox">
+                    <div class="boss-hp-bg"><div id="bossHpBar" class="boss-hp-bar" style="width: 100%;"></div></div>
+                    <div class="boss-sprite" id="bossSprite">👾</div>
+                    <h3 id="bossName">CYBER MONSTER - TIER 1</h3>
+                </div>
+                <div class="quiz-box">
+                    <div class="quiz-word" id="quizWord">Vocabulary</div>
+                    <div class="quiz-options" id="quizOptions"></div>
+                </div>
             </div>
-
-            <div class="search-box">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" id="searchInput" placeholder="Tìm kiếm từ vựng, phiên âm hoặc nghĩa...">
-            </div>
-
-            <div class="filter-group">
-                <label><i class="fa-solid fa-layer-group"></i> Cấp độ:</label>
-                <button class="btn-filter level-filter-btn active" onclick="filterByLevel('all', this)">Tất cả cấp
-                    độ</button>
-                <button class="btn-filter level-filter-btn" onclick="filterByLevel('A1-A2', this)">🟢 A1-A2 (Cơ
-                    bản)</button>
-                <button class="btn-filter level-filter-btn" onclick="filterByLevel('B1-B2', this)">🟡 B1-B2 (Trung
-                    cấp)</button>
-                <button class="btn-filter level-filter-btn" onclick="filterByLevel('C1-C2', this)">🔴 C1-C2 (Cao
-                    cấp)</button>
-            </div>
-
-            <div class="filter-group">
-                <label><i class="fa-solid fa-folder"></i> Chủ đề:</label>
-                <button class="btn-filter cat-filter-btn active" onclick="filterByCategory('all', this)">Tất cả chủ
-                    đề</button>
-                <button class="btn-filter cat-filter-btn" onclick="filterByCategory('Công nghệ', this)">💻 Công
-                    nghệ</button>
-                <button class="btn-filter cat-filter-btn" onclick="filterByCategory('Giao tiếp', this)">💬 Giao
-                    tiếp</button>
-                <button class="btn-filter cat-filter-btn" onclick="filterByCategory('Công sở', this)">💼 Công
-                    sở</button>
-                <button class="btn-filter cat-filter-btn" onclick="filterByCategory('Học tập', this)">📚 Học
-                    tập</button>
-            </div>
-
-            <div id="vocabGrid" class="vocab-grid"></div>
         </div>
 
-        <!-- 3. TRANG FLASHCARD 3D -->
+        <!-- 3. TRANG VÒNG QUAY MAY MẮN -->
+        <div id="wheelPage" style="display: none;">
+            <div class="wheel-section">
+                <h2><i class="fa-solid fa-dharmachakra"></i> Vòng Quay Từ Vựng May Mắn</h2>
+                <div class="wheel-box">
+                    <div class="pointer">▼</div>
+                    <div id="wheel" class="wheel-disc"><div class="wheel-text">SPIN</div></div>
+                </div>
+                <button class="btn btn-cyber-primary btn-spin" onclick="spinWheel()"><i class="fa-solid fa-rotate"></i> QUAY NGAY</button>
+                <div id="wheelResult" class="result-card" style="display: none;">
+                    <h3 id="resWord">Opportunity</h3>
+                    <p id="resIpa">/ˌɒp.əˈtʃuː.nə.ti/</p>
+                    <p id="resMeaning">Cơ hội</p>
+                    <button class="btn btn-cyber-secondary" onclick="speakText(document.getElementById('resWord').textContent)"><i class="fa-solid fa-volume-high"></i> Đọc Sound</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. TRANG THẺ 3D HOLOGRAM TILT-MOTION PRO -->
         <div id="flashcardPage" style="display: none;">
-            <h2><i class="fa-solid fa-clone"></i> Lật Thẻ Học Từ Vựng (Flashcard 3D)</h2>
-            <p class="sub-title">Nhấn vào thẻ để xem nghĩa & nghe phát âm chuẩn</p>
+            <div class="flashcard-header">
+                <h2><i class="fa-solid fa-cube"></i> Thẻ Ghi Nhớ Hologram 3D Tilt Motion</h2>
+                <p class="sub-title">Di chuyển chuột hoặc vuốt tay để tự động xoay nghiêng góc 3D</p>
+                <div class="progress-bar-container">
+                    <div id="cyberProgressBar" class="cyber-progress"></div>
+                </div>
+            </div>
 
             <div class="flashcard-container">
-                <div id="flashcard3D" class="card-3d" onclick="flipCard()">
+                <div id="flashcard3D" class="card-3d-hologram" onclick="flipCard()">
                     <div class="card-front">
-                        <span id="flashLevel" class="badge">A1-A2</span>
+                        <span id="flashLevel" class="cyber-badge">LEVEL: A1</span>
                         <h3 id="flashWordFront">Vocabulary</h3>
-                        <p class="hint">Bấm vào đây để lật thẻ 🔄</p>
+                        <p class="hint">⚡ Chạm / Nhấn để lật thẻ Hologram 🔄 ⚡</p>
                     </div>
                     <div class="card-back">
+                        <span class="cyber-badge-back">TRANSLATION</span>
                         <h3 id="flashWordBack">Vocabulary</h3>
                         <p id="flashIpa" class="ipa">/vəˈkæb.jə.lər.i/</p>
                         <p id="flashMeaning" class="meaning">Từ vựng</p>
-                        <p id="flashExample" class="example">Reading improves your vocabulary.</p>
+                        <p id="flashExample" class="example">"Reading improves your vocabulary."</p>
                     </div>
                 </div>
 
                 <div class="controls">
-                    <button class="btn btn-ctrl" onclick="prevCard()">← Từ trước</button>
-                    <button class="btn btn-primary" onclick="speakWord()"><i class="fa-solid fa-volume-high"></i> Nghe
-                        Đọc</button>
-                    <button class="btn btn-ctrl" onclick="nextCard()">Từ tiếp →</button>
+                    <button class="btn btn-ctrl" onclick="prevCard()">← Từ Trước</button>
+                    <button class="btn btn-cyber-primary" onclick="speakCurrentWord()"><i class="fa-solid fa-volume-high"></i> Phát Âm</button>
+                    <button class="btn btn-cyber-success" onclick="markMastered()"><i class="fa-solid fa-check"></i> ĐÃ MASTER (+50 XP)</button>
+                    <button class="btn btn-cyber-warning" onclick="flipCard()"><i class="fa-solid fa-rotate"></i> Lật Thẻ</button>
+                    <button class="btn btn-ctrl" onclick="nextCard()">Từ Tiếp →</button>
                 </div>
             </div>
         </div>
 
-        <!-- 4. TRANG THÊM TỪ MỚI (ĐÃ CÂN BẰNG HÀNG LỚP GIAO DIỆN) -->
-        <div id="addwordPage" style="display: none;">
-            <div class="form-card">
-                <h2><i class="fa-solid fa-circle-plus"></i> Thêm Từ Mới Vào Kho Từ Vựng</h2>
-                <form id="addWordForm">
-                    <div class="form-row">
-                        <div class="form-group-half">
-                            <input type="text" id="inputWord" placeholder="Từ Tiếng Anh (VD: Opportunity)" required>
-                        </div>
-                        <div class="form-group-half">
-                            <input type="text" id="inputIpa" placeholder="Phiên âm (VD: /ˌɒp.əˈtʃuː.nə.ti/)">
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group-half">
-                            <input type="text" id="inputMeaning" placeholder="Nghĩa Tiếng Việt" required>
-                        </div>
-                        <div class="form-group-half">
-                            <select id="selectLevel">
-                                <option value="A1-A2">🟢 Cấp độ A1-A2 (Cơ bản)</option>
-                                <option value="B1-B2">🟡 Cấp độ B1-B2 (Trung cấp)</option>
-                                <option value="C1-C2">🔴 Cấp độ C1-C2 (Cao cấp)</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group-half">
-                            <select id="selectCategory">
-                                <option value="Công nghệ">💻 Công nghệ</option>
-                                <option value="Giao tiếp">💬 Giao tiếp</option>
-                                <option value="Công sở">💼 Công sở</option>
-                                <option value="Học tập">📚 Học tập</option>
-                            </select>
-                        </div>
-                        <div class="form-group-half">
-                            <input type="text" id="inputExample" placeholder="Ví dụ đặt câu bằng tiếng Anh">
-                        </div>
-                    </div>
-
-                    <button type="submit" class="btn btn-submit"><i class="fa-solid fa-floppy-disk"></i> Lưu Từ Mới Về
-                        Trình Duyệt</button>
-                </form>
+        <!-- 5. BẢNG XẾP HẠNG -->
+        <div id="leaderboardPage" style="display: none;">
+            <div class="leaderboard-card">
+                <h2><i class="fa-solid fa-trophy"></i> BẢNG XẾP HẠNG NHÓM 7 THÀNH VIÊN</h2>
+                <table class="cyber-table">
+                    <thead>
+                        <tr><th>Hạng</th><th>Thành Viên</th><th>Cấp Độ Pet</th><th>Điểm XP</th></tr>
+                    </thead>
+                    <tbody id="leaderboardBody"></tbody>
+                </table>
             </div>
         </div>
 
-        <!-- 5. TRANG BẢNG GIÁ PRO -->
+        <!-- 6. BẢNG GIÁ PRO VIP MỞ RỘNG -->
         <div id="pricingPage" style="display: none;">
             <div class="pricing-header">
-                <h2><i class="fa-solid fa-gem"></i> Nâng Cấp Tài Khoản VocabMaster Pro</h2>
-                <p>Chọn gói học phù hợp để mở khóa toàn bộ tính năng và lộ trình từ vựng chuyên sâu</p>
+                <h2><i class="fa-solid fa-crown"></i> Nâng Cấp Quyền VIP Cyber</h2>
+                <p>Mở khóa full tính năng Đấu Boss nâng cao, AI phát âm & Kho từ vựng IELTS 8.0</p>
+                <div class="countdown-banner">
+                    ⚡ Flash Sale 50% dành cho sinh viên kết thúc sau: <span id="cyberTimer">14:59</span>
+                </div>
             </div>
 
-            <div class="pricing-grid">
-                <div class="price-card">
-                    <div class="card-badge">Cơ Bản</div>
-                    <h3>Gói Miễn Phí</h3>
-                    <div class="price">0đ <span>/tháng</span></div>
-                    <ul class="features-list">
-                        <li><i class="fa-solid fa-check"></i> Học từ vựng chuẩn A1 - C2</li>
-                        <li><i class="fa-solid fa-check"></i> Thẻ ghi nhớ Flashcard 3D</li>
-                        <li><i class="fa-solid fa-check"></i> Phát âm chuẩn Anh - Mỹ</li>
-                        <li><i class="fa-solid fa-check"></i> Lưu tối đa 50 từ mới</li>
-                        <li class="disabled"><i class="fa-solid fa-xmark"></i> Bài tập trắc nghiệm</li>
-                        <li class="disabled"><i class="fa-solid fa-xmark"></i> Chấm điểm AI</li>
+            <div class="pricing-grid-extended">
+                <div class="price-card-cyber">
+                    <div class="plan-tag">BASIC</div>
+                    <h3>Gói Starter Free</h3>
+                    <div class="price">0đ <span>/trọn đời</span></div>
+                    <ul class="cyber-features">
+                        <li><i class="fa-solid fa-check"></i> Học từ vựng cơ bản A1-C2</li>
+                        <li><i class="fa-solid fa-check"></i> Thẻ 3D tiêu chuẩn</li>
+                        <li class="disabled"><i class="fa-solid fa-xmark"></i> Không có Linh vật Rồng Max</li>
+                        <li class="disabled"><i class="fa-solid fa-xmark"></i> Không gửi mail xác nhận</li>
                     </ul>
-                    <button class="btn btn-secondary btn-block">Đang Sử Dụng</button>
+                    <button class="btn btn-cyber-secondary btn-block">Đang Kích Hoạt</button>
                 </div>
 
-                <div class="price-card popular">
-                    <div class="card-badge popular-badge">Phổ Biến Nhất 🔥</div>
-                    <h3>Gói Pro Tháng</h3>
+                <div class="price-card-cyber vip">
+                    <div class="vip-tag">BÁN CHẠY NHẤT 🔥</div>
+                    <h3>Gói Pro Cyber</h3>
                     <div class="price">99.000đ <span>/tháng</span></div>
-                    <ul class="features-list">
-                        <li><i class="fa-solid fa-check"></i> Tất cả tính năng Free</li>
-                        <li><i class="fa-solid fa-check"></i> Không giới hạn lưu từ</li>
-                        <li><i class="fa-solid fa-check"></i> Bộ 3.000 từ vựng IELTS</li>
-                        <li><i class="fa-solid fa-check"></i> Luyện trắc nghiệm thông minh</li>
-                        <li><i class="fa-solid fa-check"></i> Chấm điểm phát âm bằng AI</li>
+                    <ul class="cyber-features">
+                        <li><i class="fa-solid fa-check"></i> Mở khóa toàn bộ từ vựng IELTS/TOEIC</li>
+                        <li><i class="fa-solid fa-check"></i> Thẻ 3D Tilt-Motion siêu mượt</li>
+                        <li><i class="fa-solid fa-check"></i> Đấu Boss diệt quái không giới hạn</li>
+                        <li><i class="fa-solid fa-check"></i> Tự động gửi mail VIP qua EmailJS</li>
                     </ul>
-                    <button class="btn btn-primary btn-block" onclick="selectPlan('Gói Pro Tháng', '99.000đ')">Đăng Ký
-                        Ngay</button>
+                    <button class="btn btn-cyber-primary btn-block" onclick="openPayment('Gói Pro Cyber', '99.000đ')">NÂNG CẤP NGAY</button>
                 </div>
 
-                <div class="price-card">
-                    <div class="card-badge">Tiết Kiệm 60%</div>
-                    <h3>Gói Trọn Đời</h3>
-                    <div class="price">499.000đ <span>/trọn đời</span></div>
-                    <ul class="features-list">
-                        <li><i class="fa-solid fa-check"></i> Sở hữu vĩnh viễn tính năng Pro</li>
-                        <li><i class="fa-solid fa-check"></i> Cập nhật từ vựng hàng tháng</li>
-                        <li><i class="fa-solid fa-check"></i> Hỗ trợ 1:1 từ giảng viên</li>
-                        <li><i class="fa-solid fa-check"></i> Tải PDF offline miễn phí</li>
+                <div class="price-card-cyber squad">
+                    <div class="squad-tag">NHÓM 7 NGƯỜI 👥</div>
+                    <h3>Gói Master Squad</h3>
+                    <div class="price">399.000đ <span>/trọn đời</span></div>
+                    <ul class="cyber-features">
+                        <li><i class="fa-solid fa-check"></i> Tất cả quyền lợi của gói Pro</li>
+                        <li><i class="fa-solid fa-check"></i> Cấp 7 Tài khoản VIP độc lập</li>
+                        <li><i class="fa-solid fa-check"></i> Vinh danh Bảng Xếp Hạng Nhóm</li>
                     </ul>
-                    <button class="btn btn-primary btn-block" onclick="selectPlan('Gói Trọn Đời', '499.000đ')">Mua Vĩnh
-                        Viễn</button>
+                    <button class="btn btn-cyber-success btn-block" onclick="openPayment('Gói Master Squad (7 người)', '399.000đ')">ĐĂNG KÝ NHÓM</button>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- POPUP MODAL THANH TOÁN -->
+    <!-- MODAL THANH TOÁN -->
     <div id="paymentModal" class="modal-overlay" style="display: none;">
-        <div class="modal-content">
-            <button class="close-modal-btn" onclick="closePaymentModal()">&times;</button>
-            <div class="modal-header">
-                <h2><i class="fa-solid fa-credit-card"></i> Thanh Toán Gói Học</h2>
-                <p id="modalPlanName">Đang chọn gói...</p>
-            </div>
-
-            <form id="paymentForm" onsubmit="handleConfirmPayment(event)">
-                <div class="form-group">
-                    <label><i class="fa-solid fa-user"></i> Họ và tên người mua:</label>
-                    <input type="text" id="buyerName" placeholder="Ví dụ: Nguyễn Văn A" required>
+        <div class="modal-content-cyber">
+            <button class="close-btn" onclick="closePayment()">&times;</button>
+            <h2><i class="fa-solid fa-credit-card"></i> Cổng Thanh Toán Cyber</h2>
+            <p id="modalPlanName" class="selected-plan-title">Gói Pro Cyber</p>
+            
+            <form onsubmit="confirmPayment(event)">
+                <div class="form-group-cyber">
+                    <label>Họ tên người đăng ký:</label>
+                    <input type="text" id="buyerName" placeholder="Nhập họ và tên..." required>
                 </div>
-
-                <div class="form-group">
-                    <label><i class="fa-solid fa-envelope"></i> Email nhận tài khoản:</label>
+                <div class="form-group-cyber">
+                    <label>Email nhận mã VIP:</label>
                     <input type="email" id="buyerEmail" placeholder="nguyenvana@gmail.com" required>
                 </div>
-
-                <div class="form-group">
-                    <label><i class="fa-solid fa-phone"></i> Số điện thoại:</label>
-                    <input type="tel" id="buyerPhone" placeholder="0901234567" required>
+                <div class="form-group-cyber">
+                    <label>Phương thức thanh toán:</label>
+                    <select id="payMethod">
+                        <option value="QR Banking">Quét mã QR Banking (Momo / ZaloPay / VietQR)</option>
+                        <option value="Chuyển khoản">Chuyển khoản Ngân hàng 24/7</option>
+                    </select>
                 </div>
-
-                <div class="form-group">
-                    <label><i class="fa-solid fa-wallet"></i> Phương thức thanh toán:</label>
-                    <div class="payment-methods">
-                        <label class="method-option">
-                            <input type="radio" name="paymentMethod" value="QR Code" checked>
-                            <span><i class="fa-solid fa-qrcode"></i> Quét mã QR Banking</span>
-                        </label>
-                        <label class="method-option">
-                            <input type="radio" name="paymentMethod" value="MoMo">
-                            <span><i class="fa-solid fa-mobile-screen"></i> Ví MoMo</span>
-                        </label>
-                    </div>
-                </div>
-
-                <div class="summary-box">
-                    <span>Tổng tiền thanh toán:</span>
-                    <strong id="modalPlanPrice">0đ</strong>
-                </div>
-
-                <button type="submit" class="btn btn-primary btn-block btn-pay">
-                    <i class="fa-solid fa-lock"></i> Xác Nhận Thanh Toán
+                <button type="submit" class="btn btn-cyber-primary btn-block btn-pay" id="btnPaySubmit">
+                    <i class="fa-solid fa-lock"></i> XÁC NHẬN VÀ GỬI EMAIL TỰ ĐỘNG
                 </button>
             </form>
         </div>
     </div>
 
-    <footer>
-        <p>© 2026 VocabMaster App - Build with HTML, CSS & JavaScript.</p>
-    </footer>
-
     <script src="script.js"></script>
 </body>
-
 </html>
